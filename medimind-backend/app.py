@@ -1,9 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,send_from_directory
 from flask_cors import CORS
 import requests
 import os
 from dotenv import load_dotenv
-from flask import Flask, send_from_directory
+
 
 # Load environment variables
 load_dotenv()
@@ -28,6 +28,32 @@ def serve_static(path):
 # def home():
 #     return "Welcome to MediMind! Your AI medical assistant."
 @app.route("/chat", methods=["POST"])
+# def chat():
+#     data = request.json
+#     messages = data.get("messages", [])
+
+#     payload = {
+#         "model": "llama3-8b-8192",
+#         "messages": messages,
+#         "temperature": 0.7
+#     }
+
+#     headers = {
+#         "Authorization": f"Bearer {GROQ_API_KEY}"
+#     }
+
+#     try:
+#         response = requests.post(GROQ_API_URL, json=payload, headers=headers)
+#         response.raise_for_status()
+#         result = response.json()
+#         reply = result['choices'][0]['message']['content']
+#         return jsonify({"reply": reply})
+#     except Exception as e:
+#         print("Error:", e)
+#         if hasattr(e, 'response'):
+#             print("Response:", e.response.text)
+#         return jsonify({"error": str(e)}), 500
+@app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
     messages = data.get("messages", [])
@@ -42,16 +68,20 @@ def chat():
         "Authorization": f"Bearer {GROQ_API_KEY}"
     }
 
+    print("Payload:", payload)  # Debug
+    print("Headers:", headers)  # Debug
+
     try:
         response = requests.post(GROQ_API_URL, json=payload, headers=headers)
         response.raise_for_status()
         result = response.json()
+        print("Groq response:", result)  # Debug
         reply = result['choices'][0]['message']['content']
         return jsonify({"reply": reply})
     except Exception as e:
         print("Error:", e)
         if hasattr(e, 'response'):
-            print("Response:", e.response.text)
+            print("Groq API Response:", e.response.text)  # ✨ This is the most useful part
         return jsonify({"error": str(e)}), 500
 
 
