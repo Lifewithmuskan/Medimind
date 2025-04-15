@@ -1,0 +1,15 @@
+### Check MediMind
+POST http://127.0.0.1:5000/chat
+Content-Type: application/json
+
+{
+  "message": "I have a headache and fever."
+}
+
+### Follow-up
+POST http://127.0.0.1:5000/chat
+Content-Type: application/json
+
+{
+  "message": "The pain is sharp, mostly behind my eyes."
+}
