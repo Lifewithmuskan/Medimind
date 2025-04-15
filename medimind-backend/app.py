@@ -204,6 +204,7 @@ def chat():
 
 def get_next_question(step, user_message):
     if step == 0:
+        
         return "Can you tell me more about your stomach ache? Is it: * Sharp * Dull * Crampy?"
     elif step == 1:
         if "crampy" in user_message:
