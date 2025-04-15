@@ -113,17 +113,13 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import requests
 import os
-from dotenv import load_dotenv
-
-# No need to load .env file since we're using the key directly
-# load_dotenv()
-
-app = Flask(__name__, static_folder='../medimind-frontend', template_folder='../medimind-frontend')
-CORS(app)
 
 # Directly using the API Key here
 GROQ_API_KEY = "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"
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+app = Flask(__name__, static_folder='../medimind-frontend', template_folder='../medimind-frontend')
+CORS(app)
 
 conversation_state = {}
 
@@ -141,29 +137,29 @@ def chat():
     messages = data.get("messages", [])
 
     payload = {
-        "model": "llama3-8b-8192",
+        "model": "llama3-8b-8192",  # The model you're using
         "messages": messages,
-        "temperature": 0.7
+        "temperature": 0.7  # Adjust temperature for more randomness (0.0-1.0)
     }
 
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}"
     }
 
-    print("Payload:", payload)  # Debug
-    print("Headers:", headers)  # Debug
+    print("Payload:", payload)  # Debugging output for the payload
+    print("Headers:", headers)  # Debugging output for the headers
 
     try:
         response = requests.post(GROQ_API_URL, json=payload, headers=headers)
         response.raise_for_status()
         result = response.json()
-        print("Groq response:", result)  # Debug
+        print("Groq response:", result)  # Debugging output for the API response
         reply = result['choices'][0]['message']['content']
         return jsonify({"reply": reply})
     except Exception as e:
         print("Error:", e)
         if hasattr(e, 'response'):
-            print("Groq API Response:", e.response.text)  # ✨ This is the most useful part
+            print("Groq API Response:", e.response.text)  # This is useful for debugging
         return jsonify({"error": str(e)}), 500
 
 def get_next_question(step, user_message):
