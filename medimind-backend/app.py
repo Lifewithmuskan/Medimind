@@ -132,6 +132,36 @@ def serve_static(path):
     return send_from_directory(app.static_folder, path)
 
 @app.route("/chat", methods=["POST"])
+# def chat():
+#     data = request.json
+#     messages = data.get("messages", [])
+
+#     payload = {
+#         "model": "llama3-8b-8192",  # The model you're using
+#         "messages": messages,
+#         "temperature": 0.7  # Adjust temperature for more randomness (0.0-1.0)
+#     }
+
+#     headers = {
+#         "Authorization": f"Bearer {GROQ_API_KEY}"
+#     }
+
+#     print("Payload:", payload)  # Debugging output for the payload
+#     print("Headers:", headers)  # Debugging output for the headers
+
+#     try:
+#         response = requests.post(GROQ_API_URL, json=payload, headers=headers)
+#         response.raise_for_status()
+#         result = response.json()
+#         print("Groq response:", result)  # Debugging output for the API response
+#         reply = result['choices'][0]['message']['content']
+#         return jsonify({"reply": reply})
+#     except Exception as e:
+#         print("Error:", e)
+#         if hasattr(e, 'response'):
+#             print("Groq API Response:", e.response.text)  # This is useful for debugging
+#         return jsonify({"error": str(e)}), 500
+@app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
     messages = data.get("messages", [])
@@ -152,10 +182,20 @@ def chat():
     try:
         response = requests.post(GROQ_API_URL, json=payload, headers=headers)
         response.raise_for_status()
+        
+        # Debugging: Print the status code and response content
+        print("API Status Code:", response.status_code)
+        print("API Response:", response.text)
+
         result = response.json()
         print("Groq response:", result)  # Debugging output for the API response
-        reply = result['choices'][0]['message']['content']
-        return jsonify({"reply": reply})
+
+        # Check if the response is valid and contains the expected content
+        if 'choices' in result and len(result['choices']) > 0:
+            reply = result['choices'][0]['message']['content']
+            return jsonify({"reply": reply})
+        else:
+            return jsonify({"error": "Unexpected API response format"}), 500
     except Exception as e:
         print("Error:", e)
         if hasattr(e, 'response'):
