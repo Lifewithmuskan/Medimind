@@ -3,21 +3,30 @@ from flask_cors import CORS
 import requests
 import os
 from dotenv import load_dotenv
+from flask import Flask, send_from_directory
 
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+# app = Flask(__name__)
+app = Flask(__name__, static_folder='../medimind-frontend', template_folder='../medimind-frontend')
 CORS(app)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 conversation_state = {}
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.template_folder, 'index.html')
 
-@app.route("/", methods=["GET"])
-def home():
-    return "Welcome to MediMind! Your AI medical assistant."
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
+
+# @app.route("/", methods=["GET"])
+# def home():
+#     return "Welcome to MediMind! Your AI medical assistant."
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
