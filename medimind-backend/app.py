@@ -52,6 +52,7 @@ def serve_static(path):
 #         return jsonify({"error": str(e)}), 500
 @app.route("/chat", methods=["POST"])
 def chat():
+    print("⚡ /chat hit")
     data = request.json
     messages = data.get("messages", [])
 
